@@ -17,8 +17,8 @@ async function getAccessToken() {
     try {
         const accessTokenXml = await client.post(`${baseUrl}/UserService/DeviceLogin11?deviceType=${loginData.deviceType}&deviceKey=${loginData.deviceKey}&checksum=${deviceChecksum}&clientDateTime=${loginData.dateTime}${loginData.uselessParams}`)
         const accessTokenJs = parser.xml2js(accessTokenXml.data, {compact: true, spaces: 4})
-        const errorMessage = accessTokenJs.UserLogin._attributes.errorMessage
-        const output = (errorMessage) ? errorMessage : accessTokenJs.UserService.UserLogin._attributes.accessToken
+        const isError = accessTokenJs.UserLogin
+        const output = (isError) ? accessTokenJs.UserLogin._attributes.errorMessage : accessTokenJs.UserService.UserLogin._attributes.accessToken
 
         return output
     } catch (error) {return error}
