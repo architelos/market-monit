@@ -1,6 +1,6 @@
-const {getAccessToken, getCurrentListings, welcomeMessage, clearLastLine} = require('./helpers')
+const {getAccessToken, getCurrentListings, welcomeMessage, clearLastLine, formatString} = require('./helpers')
 const consoleColors = require('chalk')
-const currentAccessToken = new Array()
+const [currentAccessToken, lastSaleId] = [new Array(), new Array()]
 
 process.on('unhandledRejection', (reason, promise) => {
     console.log(`${consoleColors.red('Unhandled promise rejection:')} ${reason}`)
@@ -17,7 +17,7 @@ welcomeMessage()
 async function setAccessToken() {
     console.log('Logging in...')
 
-    const accessToken = 'c27f2dbb-f2c3-4090-9a18-c24ef3d05ce0'
+    const accessToken = /* await getAccessToken() */ 'c27f2dbb-f2c3-4090-9a18-c24ef3d05ce0'
     if (!accessToken.match(/.{8}-.{4}-/)) {
         clearLastLine()
         console.log(`${consoleColors.red('Login failed:')} ${accessToken}`)
@@ -25,7 +25,7 @@ async function setAccessToken() {
     }
 
     clearLastLine()
-    console.log(`${consoleColors.green('Login succeeded:')} ${accessToken}`)
+    console.log(`${consoleColors.green('Login succeeded!')}`)
     currentAccessToken.push(accessToken)
 }
 
@@ -38,9 +38,21 @@ async function marketMonit() {
     console.log('Scanning market...')
 
     const currentListings = await getCurrentListings(accessToken, 81)
+    const lastListing = currentListings.at(-1)._attributes
     clearLastLine()
 
-    console.log(currentListings.at(-1))
+    if (typeof currentListings != 'object') console.log(`${consoleColors.red('Retrieving current listings failed:')} ${currentListings}`)
+    const saleId = lastListing.SaleId
+    const currency = formatString(lastListing.ActivityArgument, 'currency')
+    const message = formatString(lastListing.Message, 'market')
+
+    if (!lastSaleId.length) lastSaleId.push(saleId)
+    if (lastSaleId[0] != saleId) {
+        lastSaleId.pop()
+
+        console.log(`${lastListing.UserName} is selling${message} (${currency})`)
+        lastSaleId.push(saleId)
+    }
 }
 
 if (require.main == module) setInterval(marketMonit, 3000)

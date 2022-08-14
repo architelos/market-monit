@@ -51,9 +51,16 @@ function clearLastLine() {
     process.stdout.clearLine(1)
 }
 
+function formatString(message, option) {
+    if (option == 'currency') return `${message.split(':')[1]} ${message.split(':')[0]}`
+    if (option == 'market') return message.substring(message.indexOf(' ' + 1))
+    return
+}
+
 module.exports = {
     getAccessToken,
     getCurrentListings,
     welcomeMessage,
     clearLastLine,
+    formatString
 }
