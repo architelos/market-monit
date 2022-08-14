@@ -17,7 +17,7 @@ welcomeMessage()
 async function setAccessToken() {
     console.log('Logging in...')
 
-    const accessToken = /* await getAccessToken() */ 'c27f2dbb-f2c3-4090-9a18-c24ef3d05ce0'
+    const accessToken = await getAccessToken()
     if (!accessToken.match(/.{8}-.{4}-/)) {
         clearLastLine()
         console.log(`${consoleColors.red('Login failed:')} ${accessToken}`)
