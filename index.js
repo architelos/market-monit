@@ -1,6 +1,8 @@
 const {getAccessToken, getCurrentListings, welcomeMessage, clearLastLine, formatString} = require('./helpers')
 const consoleColors = require('chalk')
+
 const [currentAccessToken, lastSaleId] = [new Array(), new Array()]
+const itemId = require('readline-sync').question('Item id: ')
 
 process.on('unhandledRejection', (reason, promise) => {
     console.log(`${consoleColors.red('Unhandled promise rejection:')} ${reason}`)
@@ -37,11 +39,15 @@ const accessToken = currentAccessToken.pop()
 async function marketMonit() {
     console.log('Scanning market...')
 
-    const currentListings = await getCurrentListings(accessToken, 81)
-    const lastListing = currentListings.at(-1)._attributes
+    const currentListings = await getCurrentListings(accessToken, itemId)
+    if (typeof currentListings != 'object') {
+        clearLastLine()
+        console.log(`${consoleColors.red('Retrieving current listings failed:')} ${currentListings}`)
+        process.exit(1)
+    }
     clearLastLine()
 
-    if (typeof currentListings != 'object') console.log(`${consoleColors.red('Retrieving current listings failed:')} ${currentListings}`)
+    const lastListing = currentListings.at(-1)._attributes
     const saleId = lastListing.SaleId
     const currency = formatString(lastListing.ActivityArgument, 'currency')
     const message = formatString(lastListing.Message, 'market')
