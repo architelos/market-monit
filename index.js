@@ -3,6 +3,7 @@ const consoleColors = require('chalk')
 
 const [currentAccessToken, lastSaleId] = [new Array(), new Array()]
 const itemId = require('readline-sync').question('Item id: ')
+let accessToken
 
 process.on('unhandledRejection', (reason, promise) => {
     console.log(`${consoleColors.red('Unhandled promise rejection:')} ${reason}`)
@@ -34,11 +35,10 @@ async function setAccessToken() {
 setInterval(setAccessToken, 288 * 100000)
 setAccessToken()
 
-const accessToken = currentAccessToken.pop()
-
 async function marketMonit() {
     console.log('Scanning market...')
-
+    
+    if (!accessToken) accessToken = currentAccessToken.pop()
     const currentListings = await getCurrentListings(accessToken, itemId)
     if (typeof currentListings != 'object') {
         clearLastLine()
