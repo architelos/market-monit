@@ -3,7 +3,7 @@ const hasher = require('md5')
 const parser = require('xml-js')
 const crypto = require('crypto')
 const consoleColors = require('chalk')
-const asciiArt = require('figlet')
+const fs = require('node:fs')
 
 const deviceTypes = ['DeviceTypeWindows', 'DeviceTypeAndroid', 'DeviceTypeMac', 'DeviceTypeIPhone', 'DeviceTypeGeneric']
 const loginData = {
@@ -42,7 +42,7 @@ async function getCurrentListings(accessToken, itemId) {
 }
 
 function welcomeMessage() {
-    console.log(`${asciiArt.textSync('market-monit')}`)
+    console.log(fs.readFileSync('./title.txt').toString())
     console.log(`Pixel Starships market monitoring tool by architelos#6702 - ${consoleColors.bold('Use at your own discretion.')}\n`)
 }
 

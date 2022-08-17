@@ -1,8 +1,9 @@
 const {getAccessToken, getCurrentListings, welcomeMessage, clearLastLine, formatString} = require('./helpers')
 const consoleColors = require('chalk')
+const fs = require('node:fs')
 
 const [currentAccessToken, lastSaleId] = [new Array(), new Array()]
-const itemId = require('readline-sync').question('Item id: ')
+const itemDatabase = JSON.parse(fs.readFileSync('./items.json'))
 let accessToken
 
 process.on('unhandledRejection', (reason, promise) => {
@@ -16,6 +17,13 @@ process.on('uncaughtException', (error, location) => {
 })
 
 welcomeMessage()
+let itemId = require('readline-sync').question('Item name/id: ').replace(/[^a-zA-Z0-9]/g, '').toLowerCase()
+if (!itemDatabase.hasOwnProperty(itemId)) {
+    console.log(consoleColors.red('Item does not exist/is not sellable.'))
+    process.exit(1)
+}
+itemId = itemDatabase[itemId]
+clearLastLine()
 
 async function setAccessToken() {
     console.log('Logging in...')
@@ -36,9 +44,9 @@ setInterval(setAccessToken, 288 * 100000)
 setAccessToken()
 
 async function marketMonit() {
+    if (!accessToken) accessToken = currentAccessToken.pop()
     console.log('Scanning market...')
     
-    if (!accessToken) accessToken = currentAccessToken.pop()
     const currentListings = await getCurrentListings(accessToken, itemId)
     if (typeof currentListings != 'object') {
         clearLastLine()
