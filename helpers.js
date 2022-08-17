@@ -54,7 +54,13 @@ function clearLastLine() {
 function formatString(message, option) {
     if (option == 'currency') return `${message.split(':')[1]} ${message.split(':')[0]}`
     if (option == 'market') return message.substring(message.indexOf(' ' + 1))
-    return
+}
+
+function getMatching(keys, item) {
+    const closestMatch = keys.find((element) => element.includes(item))
+
+    if (!closestMatch) return
+    return closestMatch
 }
 
 module.exports = {
@@ -62,5 +68,6 @@ module.exports = {
     getCurrentListings,
     welcomeMessage,
     clearLastLine,
-    formatString
+    formatString,
+    getMatching
 }

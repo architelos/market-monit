@@ -1,9 +1,10 @@
-const {getAccessToken, getCurrentListings, welcomeMessage, clearLastLine, formatString} = require('./helpers')
+const {getAccessToken, getCurrentListings, welcomeMessage, clearLastLine, formatString, getMatching} = require('./helpers')
 const consoleColors = require('chalk')
 const fs = require('node:fs')
 
 const [currentAccessToken, lastSaleId] = [new Array(), new Array()]
 const itemDatabase = JSON.parse(fs.readFileSync('./items.json'))
+const dbKeys = Object.keys(itemDatabase)
 let accessToken
 
 process.on('unhandledRejection', (reason, promise) => {
@@ -17,25 +18,29 @@ process.on('uncaughtException', (error, location) => {
 })
 
 welcomeMessage()
+
 let itemId = require('readline-sync').question('Item name/id: ').replace(/[^a-zA-Z0-9]/g, '').toLowerCase()
-if (!itemDatabase.hasOwnProperty(itemId)) {
-    console.log(consoleColors.red('Item does not exist/is not sellable.'))
+itemId = getMatching(dbKeys, itemId)
+clearLastLine()
+
+if (!itemId) {
+    console.log(`${consoleColors.red(`Item does not exist/is not sellable.`)}`)
     process.exit(1)
 }
+console.log(`${consoleColors.green('Selected item: ')}${itemId}`)
 itemId = itemDatabase[itemId]
-clearLastLine()
 
 async function setAccessToken() {
     console.log('Logging in...')
 
     const accessToken = await getAccessToken()
+    clearLastLine()
+
     if (!accessToken.match(/.{8}-.{4}-/)) {
-        clearLastLine()
         console.log(`${consoleColors.red('Login failed:')} ${accessToken}`)
         process.exit(1)
     }
 
-    clearLastLine()
     console.log(`${consoleColors.green('Login succeeded!')}`)
     currentAccessToken.push(accessToken)
 }
@@ -48,12 +53,12 @@ async function marketMonit() {
     console.log('Scanning market...')
     
     const currentListings = await getCurrentListings(accessToken, itemId)
+    clearLastLine()
+
     if (typeof currentListings != 'object') {
-        clearLastLine()
         console.log(`${consoleColors.red('Retrieving current listings failed:')} ${currentListings}`)
         process.exit(1)
     }
-    clearLastLine()
 
     const lastListing = currentListings.at(-1)._attributes
     const saleId = lastListing.SaleId
