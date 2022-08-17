@@ -13,7 +13,6 @@ async function main() {
             const itemDesignId = currentData._attributes.ItemDesignId
             const itemDesignName = currentData._attributes.ItemDesignName
 
-            itemObj[itemDesignId.replace(/[^a-zA-Z0-9]/g, '')] = itemDesignName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()
             itemObj[itemDesignName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()] = itemDesignId.replace(/[^a-zA-Z0-9]/g, '')
         }
     }
