@@ -13,7 +13,8 @@ async function main() {
             const itemDesignId = currentData._attributes.ItemDesignId
             const itemDesignName = currentData._attributes.ItemDesignName
 
-            itemObj[itemDesignName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()] = itemDesignId.replace(/[^a-zA-Z0-9]/g, '')
+            itemObj[itemDesignName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()] = itemDesignId
+            itemObj[itemDesignId] = itemDesignName
         }
     }
     fs.writeFileSync('./items.json', JSON.stringify(itemObj, null, 4))

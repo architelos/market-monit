@@ -19,7 +19,7 @@ process.on('uncaughtException', (error, location) => {
 
 welcomeMessage()
 
-let itemId = require('readline-sync').question('Item name/id: ').replace(/[^a-zA-Z0-9]/g, '').toLowerCase()
+let itemId = require('readline-sync').question('Item name: ').replace(/[^a-zA-Z0-9]/g, '').toLowerCase()
 itemId = getMatching(dbKeys, itemId)
 clearLastLine()
 
@@ -27,8 +27,8 @@ if (!itemId) {
     console.log(`${consoleColors.red(`Item does not exist/is not sellable.`)}`)
     process.exit(1)
 }
-console.log(`${consoleColors.green('Selected item: ')}${itemId}`)
 itemId = itemDatabase[itemId]
+console.log(`${consoleColors.green('Selected item: ')}${itemDatabase[itemId]}`)
 
 async function setAccessToken() {
     console.log('Logging in...')
@@ -41,7 +41,7 @@ async function setAccessToken() {
         process.exit(1)
     }
 
-    console.log(`${consoleColors.green('Login succeeded!')}`)
+    console.log(`${consoleColors.green('Login succeeded!')}\n`)
     currentAccessToken.push(accessToken)
 }
 
